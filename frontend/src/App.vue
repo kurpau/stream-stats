@@ -1,15 +1,16 @@
 <template>
-  <section>
-    <h1 class="btn">Stream Stats</h1>
-    
+  <section class="container mx-auto px-4 py-8 max-w-6xl">
+    <h1 class="text-3xl font-bold text-center mb-8">Stream Stats</h1>
+
     <FileUploader 
       v-if="!selectedFile" 
       :available-files="availableFiles" 
       @file-selected="handleFileSelect" 
       @file-uploaded="handleFileUpload"
+      class="max-w-xl mx-auto"
     />
     
-    <div v-else>
+    <div v-else class="w-full">
       <StatsControls 
         :filename="selectedFile"
         :time-period="timePeriod"
@@ -17,13 +18,18 @@
         :available-stores="stats.available_stores"
         @back="goBack"
         @filters-updated="updateFilters"
+        class="mb-6"
       />
       
-      <StatsSummary :stats="stats" />
+      <StatsSummary 
+        :stats="stats" 
+        class="mb-8"
+      />
       
       <StatsTable 
         :data="stats.data" 
-        :time-period="timePeriod" 
+        :time-period="timePeriod"
+        class="w-full" 
       />
     </div>
   </section>

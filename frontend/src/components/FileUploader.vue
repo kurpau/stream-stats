@@ -1,41 +1,43 @@
 <template>
-  <div>
-    <h2>Upload your TSV file</h2>
-    
-    <div>
-      <input 
-        type="file" 
-        @change="onFileSelected" 
-        accept=".tsv"
-      />
-      
-      <button 
-        @click="uploadFile" 
-        :disabled="!fileToUpload"
-      >
-        Upload
-      </button>
+  <div class="card card-border w-96">
+    <div class="card-body">
+      <h2 class="card-title">Upload your TSV file</h2>
+
+      <div>
+        <input 
+          type="file" 
+          @change="onFileSelected" 
+          accept=".tsv"
+          class="file-input mb-2"
+        />
+
+        <button 
+          @click="uploadFile" 
+          :disabled="!fileToUpload"
+          class="btn btn-primary"
+        >
+          Upload
+        </button>
+      </div>
+
+      <div class="divider">OR</div>
+
+      <h2 class="card-title">Select an existing file</h2>
+
+      <div v-if="availableFiles.length === 0">
+        No files available
+      </div>
+
+      <ul v-else class="menu bg-base-200 rounded-box w-full">
+        <li 
+          v-for="file in availableFiles" 
+          :key="file"
+          @click="selectFile(file)"
+        >
+          <a>{{ file }}</a>
+        </li>
+      </ul>
     </div>
-    
-    <div>
-      <span>OR</span>
-    </div>
-    
-    <h2>Select an existing file</h2>
-    
-    <div v-if="availableFiles.length === 0">
-      No files available
-    </div>
-    
-    <ul v-else>
-      <li 
-        v-for="file in availableFiles" 
-        :key="file"
-        @click="selectFile(file)"
-      >
-        {{ file }}
-      </li>
-    </ul>
   </div>
 </template>
 
