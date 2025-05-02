@@ -13,11 +13,17 @@
     <div v-else class="w-full">
       <StatsControls 
         :filename="selectedFile"
-        :time-period="timePeriod"
         :selected-store="selectedStore"
-        :available-stores="stats.available_stores"
+        :selected-year="selectedYear"
+        :selected-month="selectedMonth"
+        :selected-country="selectedCountry"
+        :available-stores="stats.filters?.available_stores || []"
+        :available-years="stats.filters?.available_years || []"
+        :available-months="stats.filters?.available_months || []"
+        :available-countries="stats.filters?.available_countries || []"
         @back="goBack"
         @filters-updated="updateFilters"
+        @reset-filters="resetFilters"
         class="mb-6"
       />
       
@@ -28,7 +34,6 @@
       
       <StatsTable 
         :data="stats.data" 
-        :time-period="timePeriod"
         class="w-full" 
       />
     </div>
@@ -36,24 +41,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import FileUploader from './components/FileUploader.vue'
 import StatsControls from './components/StatsControls.vue'
 import StatsSummary from './components/StatsSummary.vue'
 import StatsTable from './components/StatsTable.vue'
 
-// State
 const selectedFile = ref(null)
 const availableFiles = ref([])
-const stats = ref({
-  data: [],
-  available_stores: []
-})
-const timePeriod = ref('monthly')
+const stats = ref({})
 const selectedStore = ref('')
+const selectedYear = ref('')
+const selectedMonth = ref('')
+const selectedCountry = ref('')
 const apiUrl = 'http://localhost:8000'
 
-// Methods
+const defaultsApplied = ref(false)
+
 const fetchAvailableFiles = async () => {
   try {
     const response = await fetch(`${apiUrl}/available-files/`)
@@ -61,7 +65,7 @@ const fetchAvailableFiles = async () => {
     availableFiles.value = data.files
   } catch (error) {
     console.error('Error fetching files:', error)
-    alert('Error fetching available files. Make sure the backend server is running.')
+    alert('Error fetching available files. Make sure backend is running.')
   }
 }
 
@@ -71,17 +75,41 @@ const fetchStats = async () => {
   try {
     const url = new URL(`${apiUrl}/streaming-stats/`)
     url.searchParams.append('filename', selectedFile.value)
-    url.searchParams.append('time_period', timePeriod.value)
-    
-    if (selectedStore.value) {
-      url.searchParams.append('store', selectedStore.value)
-    }
-    
+    url.searchParams.append('store', selectedStore.value || 'any')
+    url.searchParams.append('year', selectedYear.value || 'any')
+    url.searchParams.append('month', selectedMonth.value || 'any')
+    url.searchParams.append('country', selectedCountry.value || 'any')
+
     const response = await fetch(url)
     stats.value = await response.json()
+
+    if (!defaultsApplied.value) {
+
+      if (!selectedStore.value && stats.value.filters?.available_stores.includes('Spotify')) {
+        selectedStore.value = 'Spotify'
+      }
+
+      if (!selectedYear.value) {
+        selectedYear.value = new Date().getFullYear().toString()
+      }
+
+      if (!selectedMonth.value) {
+        const today = new Date()
+        let defaultMonth = today.getMonth() - 2
+        if (defaultMonth <= 0) {
+          defaultMonth = 12 + defaultMonth
+        }
+        selectedMonth.value = defaultMonth.toString()
+      }
+
+      defaultsApplied.value = true
+
+      fetchStats()
+    }
+
   } catch (error) {
     console.error('Error fetching stats:', error)
-    alert('Error fetching statistics. Make sure the backend server is running.')
+    alert('Error fetching statistics. Make sure backend is running.')
   }
 }
 
@@ -96,21 +124,27 @@ const handleFileUpload = (filename) => {
   fetchAvailableFiles()
 }
 
-const updateFilters = ({ timePeriod: newTimePeriod, store: newStore }) => {
-  timePeriod.value = newTimePeriod
-  selectedStore.value = newStore
+const updateFilters = (filters) => {
+  selectedStore.value = filters.store
+  selectedYear.value = filters.year
+  selectedMonth.value = filters.month
+  selectedCountry.value = filters.country
+  fetchStats()
+}
+
+const resetFilters = () => {
+  selectedStore.value = ''
+  selectedYear.value = ''
+  selectedMonth.value = ''
+  selectedCountry.value = ''
   fetchStats()
 }
 
 const goBack = () => {
   selectedFile.value = null
-  stats.value = {
-    data: [],
-    available_stores: []
-  }
+  stats.value = {}
 }
 
-// Lifecycle
 onMounted(() => {
   fetchAvailableFiles()
 })
