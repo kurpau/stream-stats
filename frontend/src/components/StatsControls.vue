@@ -40,11 +40,19 @@
         <legend class="fieldset-legend">Country</legend>
         <select v-model="localCountry" class="select">
           <option value="">All Countries</option>
-          <option v-for="country in availableCountries" :key="country.key" :value="country.key">
+
+          <option disabled>=== Favourite Countries ===</option>
+          <option v-for="country in favouriteCountries" :key="country.key" :value="country.key">
+            {{ country.name }}
+          </option>
+
+          <option disabled>=== Other Countries ===</option>
+          <option v-for="country in otherCountries" :key="country.key" :value="country.key">
             {{ country.name }}
           </option>
         </select>
       </fieldset>
+
     </div>
 
     <div class="flex justify-between mt-4">
@@ -55,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 const props = defineProps({
   filename: String,
@@ -76,10 +84,20 @@ const localYear = ref(props.selectedYear)
 const localMonth = ref(props.selectedMonth)
 const localCountry = ref(props.selectedCountry)
 
-watch(() => props.selectedStore, (val) => localStore.value = val)
-watch(() => props.selectedYear, (val) => localYear.value = val)
-watch(() => props.selectedMonth, (val) => localMonth.value = val)
-watch(() => props.selectedCountry, (val) => localCountry.value = val)
+const favouriteCountryCodes = ['LT', 'GB']
+
+const favouriteCountries = computed(() => {
+  return props.availableCountries.filter(c => favouriteCountryCodes.includes(c.key))
+})
+
+const otherCountries = computed(() => {
+  return props.availableCountries.filter(c => !favouriteCountryCodes.includes(c.key))
+})
+
+watch(() => props.selectedStore, val => localStore.value = val)
+watch(() => props.selectedYear, val => localYear.value = val)
+watch(() => props.selectedMonth, val => localMonth.value = val)
+watch(() => props.selectedCountry, val => localCountry.value = val)
 
 const applyFilters = () => {
   emit('filters-updated', {
@@ -98,3 +116,4 @@ const resetFilters = () => {
   emit('reset-filters')
 }
 </script>
+
