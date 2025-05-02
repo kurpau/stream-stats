@@ -30,7 +30,7 @@
 
       <ul v-else class="menu bg-base-200 rounded-box w-full">
         <li 
-          v-for="file in availableFiles" 
+          v-for="file in sortedFiles" 
           :key="file"
           @click="selectFile(file)"
         >
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   availableFiles: {
@@ -87,4 +87,8 @@ const uploadFile = async () => {
 const selectFile = (filename) => {
   emit('file-selected', filename)
 }
+
+const sortedFiles = computed(() => {
+  return [...props.availableFiles].sort().reverse()
+})
 </script>
