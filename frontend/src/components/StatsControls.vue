@@ -1,52 +1,52 @@
 <template>
-  <div class="bg-white rounded-lg shadow-sm p-5">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h2 class="font-semibold text-xl text-gray-800 truncate">{{ filename }}</h2>
+  <div class="card shadow-sm p-3">
+    <div class="flex justify-between items-center mb-2">
+      <div class="badge">
+        <h2 class="text-base">{{ filename }}</h2>
       </div>
-      
+
       <button 
         @click="$emit('back')" 
-        class="flex items-center gap-1 text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded transition"
+        class="btn"
       >
         <span>←</span> Back to Files
       </button>
     </div>
-    
-    <div class="mt-5 p-4 bg-gray-50 rounded-lg">
-      <div class="flex flex-wrap gap-4 items-end">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Time Period:</label>
+
+    <div class="card bg-base-200 p-3 flex-row justify-between gap-2">
+      <div class="flex gap-2">
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Time Period:</legend>
           <select 
             v-model="localTimePeriod"
-            class="bg-white border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="select"
           >
             <option value="daily">Daily</option>
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
           </select>
-        </div>
-        
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Store:</label>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Store:</legend>
           <select 
             v-model="localStore"
-            class="bg-white border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="select"
           >
             <option value="">All Stores</option>
             <option v-for="store in availableStores" :key="store" :value="store">
               {{ store }}
             </option>
           </select>
-        </div>
-        
-        <button 
-          @click="applyFilters"
-          class="bg-blue-600 text-white py-2 px-4 rounded font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Apply Filters
-        </button>
+        </fieldset>
       </div>
+
+      <button 
+        @click="applyFilters"
+        class="btn btn-primary self-end my-1"
+      >
+        Apply Filters
+      </button>
     </div>
   </div>
 </template>
