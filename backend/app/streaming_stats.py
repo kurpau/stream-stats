@@ -17,6 +17,7 @@ def get_country_name(code):
     country = pycountry.countries.get(alpha_2=code)
     return f"{country.name} ({code})" if country else code
 
+
 def calculate_stats(
     file_path: Path,
     store: Optional[str] = None,
@@ -55,7 +56,9 @@ def calculate_stats(
 
     if country and country.lower() != "any":
         filtered_df = filtered_df.loc[filtered_df["Country of Sale"] == country]
+
     filtered_streams = int(filtered_df["Quantity"].sum())
+    filtered_earnings = int(filtered_df["Earnings (USD)"].sum())
 
     return {
         "filters": {
@@ -69,4 +72,5 @@ def calculate_stats(
         "month": month,
         "country": country,
         "streams": filtered_streams,
+        "earnings": filtered_earnings,
     }
