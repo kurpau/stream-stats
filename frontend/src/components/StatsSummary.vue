@@ -1,18 +1,18 @@
 <template>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-white rounded-lg shadow-sm p-5">
-      <h3 class="text-sm font-medium text-gray-500 mb-1">Total Streams</h3>
-      <div class="text-2xl font-bold text-blue-600">
-        {{ stats.total_streams?.toLocaleString() || 0 }}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="card card-border card-md shadow-sm">
+      <div class="card-body items-center">
+        <h3 class="card-title">Total Streams</h3>
+        <div class="text-info text-xl font-bold">
+          {{ stats.total_streams?.toLocaleString() || 0 }}
+          {{ console.log(stats) }}
+        </div>
       </div>
     </div>
-    
-    <!-- Additional summary cards can be added here as the app grows -->
   </div>
 </template>
 
 <script setup>
-// Props
 defineProps({
   stats: {
     type: Object,
